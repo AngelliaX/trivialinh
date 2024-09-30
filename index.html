@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Presentation</title>
+
+  <style>
+  	* {
+     cursor: url('./hammer.png'), auto !important;
+     cursor: url('./hammer.png'), pointer !important;
+     cursor: url('./hammer.png'), default !important;
+   	}
+    
+    body {
+      height: 99vh;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #start-btn {
+      height: 50vh;
+      width: 50vh;
+      border-radius: 50%;
+      font-size: 2em;
+    }
+
+    .number-row {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .circle-btn {
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      background-color: lightblue;
+      margin: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .mark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      font-size: 2.5em;
+      color: red;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #answer-row {
+      display: flex;
+      justify-content: space-evenly;
+      margin: 20px 0;
+    }
+
+    .answer-box {
+      height: 100px;
+      width: 100px;
+      background-color: transparent;
+      border: 2px solid black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      cursor: pointer;
+    }
+
+    #congrats-popup {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 100px;
+      border: 2px solid black;
+      background-color: white;
+    }
+
+    #gif-page img {
+      width: 40%;
+      margin-top: 50px;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="start-page">
+    <button id="start-btn" class="circle-btn">Start</button>
+  </div>
+
+  <div id="numbers-page" class="hidden">
+    <div class="number-row">
+      <div class="circle-btn" id="circle-1" onclick="showQuestion(1)">1<div class="mark hidden">X</div></div>
+      <div class="circle-btn" id="circle-2" onclick="showQuestion(2)">2<div class="mark hidden">X</div></div>
+    </div>
+    <div class="number-row">
+      <div class="circle-btn" id="circle-3" onclick="showQuestion(3)">3<div class="mark hidden">X</div></div>
+      <div class="circle-btn" id="circle-4" onclick="showQuestion(4)">4<div class="mark hidden">X</div></div>
+      <div class="circle-btn" id="circle-5" onclick="showQuestion(5)">5<div class="mark hidden">X</div></div>
+    </div>
+  </div>
+
+  <div id="question-page" class="hidden">
+    <h2 id="question-text">Question goes here</h2>
+    <div id="answer-row">
+      <div class="answer-box" onclick="checkAnswer('A')">A</div>
+      <div class="answer-box" onclick="checkAnswer('B')">B</div>
+      <div class="answer-box" onclick="checkAnswer('C')">C</div>
+      <div class="answer-box" onclick="checkAnswer('D')">D</div>
+    </div>
+  </div>
+
+  <div id="congrats-popup" class="hidden">
+    <p>Congratulations!</p>
+    <button onclick="goBack()">Next</button>
+  </div>
+
+  <div id="gif-page" class="hidden">
+    <img id="wrong-gif" src="wrong.gif" alt="Wrong Answer">
+  </div>
+
+  <script>
+    const questions = {
+        1: {
+        text: "Thủ đô của Việt Nam là gì?",
+        correct: 'A',
+        answers: {
+          A: "Hà Nội",
+          B: "TP. Hồ Chí Minh",
+          C: "Đà Nẵng",
+          D: "Nha Trang"
+        }
+      },
+  2: {
+        text: "Hành tinh nào được biết đến với tên gọi 'Hành tinh xanh'?",
+        correct: 'A',
+        answers: {
+          A: "Trái Đất",
+          B: "Mar",
+          C: "Venus",
+          D: "Mộc"
+        }
+      },
+  3: {
+        text: "Ai là tác giả của tác phẩm 'Chí Phèo'?",
+        correct: 'C',
+        answers: {
+          A: "Nam Cao",
+          B: "Tô Hoài",
+          C: "Ngô Tất Tố",
+          D: "Xuân Diệu"
+        }
+      },
+  4: {
+        text: "Môn thể thao nào được chơi với bóng tròn và lưới?",
+        correct: 'B',
+        answers: {
+          A: "Bóng đá",
+          B: "Bóng chuyền",
+          C: "Bóng rổ",
+          D: "Bóng bàn"
+        }
+      },
+  5: {
+        text: "Biển nào là biển lớn nhất thế giới?",
+        correct: 'D',
+        answers: {
+          A: "Biển Địa Trung Hải",
+          B: "Biển Bắc",
+          C: "Biển Caribe",
+          D: "Thái Bình Dương"
+        }
+      }
+      // Add more questions similarly
+    };
+
+    let currentQuestion = null;
+
+    document.getElementById('start-btn').addEventListener('click', () => {
+      document.getElementById('start-page').classList.add('hidden');
+      document.getElementById('numbers-page').classList.remove('hidden');
+    });
+
+    function showQuestion(num) {
+  currentQuestion = num;
+  document.getElementById('numbers-page').classList.add('hidden');
+  document.getElementById('question-page').classList.remove('hidden');
+
+  // Reset answer box colors
+  const answerBoxes = document.querySelectorAll('#answer-row .answer-box');
+  answerBoxes.forEach(box => {
+    box.style.backgroundColor = 'transparent'; // Reset background color
+  });
+
+  const question = questions[num];
+  document.getElementById('question-text').textContent = question.text;
+  document.querySelectorAll('.answer-box').forEach((box, index) => {
+    const key = String.fromCharCode(65 + index);
+    box.textContent = key + ": " + question.answers[key];
+  });
+}
+
+    function checkAnswer(selected) {
+      const correctAnswer = questions[currentQuestion].correct;
+      if (selected === correctAnswer) {
+        document.getElementById('congrats-popup').classList.remove('hidden');
+      } else {
+        document.getElementById('question-page').classList.add('hidden');
+        document.getElementById('gif-page').classList.remove('hidden');
+        setTimeout(() => {
+          document.getElementById('gif-page').classList.add('hidden');
+          document.getElementById('question-page').classList.remove('hidden');
+          document.querySelector(`[onclick="checkAnswer('${selected}')"]`).style.backgroundColor = 'red';
+        }, 1000); // Time for the GIF to play
+      }
+    }
+
+    function goBack() {
+      document.getElementById('congrats-popup').classList.add('hidden');
+      document.getElementById('question-page').classList.add('hidden');
+      document.getElementById('numbers-page').classList.remove('hidden');
+
+      // Mark the answered number with an X
+      const numberCircle = document.getElementById(`circle-${currentQuestion}`);
+      const markX = numberCircle.querySelector('.mark');
+      markX.classList.remove('hidden');
+    }
+  </script>
+
+</body>
+</html>
